@@ -3,11 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import *
+from .utilities import *
 
 
 @api_view(['GET'])
 def get_pokemon(request):
-    pokemon = Pokemon.objects.count()
     if 'name' not in request.query_params:
         data = {'ERROR': 'Query param name is required.'}
         return Response(data, status=status.HTTP_400_BAD_REQUEST)
@@ -23,15 +23,47 @@ def get_pokemon(request):
         data = {'ERROR': "Pokemon with name '" + str(name) + "' was not found"}
         return Response(data, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = PokemonSerializer(pokemon)
+    # Get preevolutions and evolutions
+    poke_evos = []
+
+    pre_evos = Evolution.objects.filter(evolution=pokemon)
+    for pre_evo in pre_evos:
+        add_pre_evo = {
+            'type': 'Preevolution',
+            'id': pre_evo.preevolution.pk,
+            'name': pre_evo.preevolution.name
+        }
+        poke_evos.append(add_pre_evo)
+
+    evos = Evolution.objects.filter(preevolution=pokemon)
+    for evo in evos:
+        add_evo = {
+            'type': 'Evolution',
+            'id': evo.evolution.pk,
+            'name': evo.evolution.name
+        }
+        poke_evos.append(add_evo)
+
+    data = {
+        'pokemon': pokemon,
+        'evolutions_related': poke_evos
+    }
+
+    serializer = PokemonWithEvolutionsSerializer(data)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 def create_poke_data(request):
-    pokemon = Pokemon.objects.count()
+    pokemon_added = Pokemon.objects.count()
 
-    # serializer = PokemonSerializer(pokemon)
+    create_pokemon_data()
 
-    return Response(pokemon, status=status.HTTP_200_OK)
+    pokemon_added = Pokemon.objects.count() - pokemon_added
+
+    data = {
+        'success': 'Pokemon added: ' + str(pokemon_added)
+    }
+
+    return Response(data, status=status.HTTP_200_OK)

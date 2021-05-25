@@ -12,11 +12,8 @@ class Pokemon(models.Model):
     base_special_defense = models.FloatField(blank=True, null=True)
     base_speed = models.FloatField(blank=True, null=True)
 
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
 
-
-class Evolutions(models.Model):
+class Evolution(models.Model):
     preevolution = models.ForeignKey(
         Pokemon,
         related_name='is_preevolution_of',
@@ -26,6 +23,3 @@ class Evolutions(models.Model):
         Pokemon,
         related_name='is_evolution_of',
         on_delete=models.PROTECT)
-
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='updated at')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
