@@ -1,11 +1,26 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import *
 from .utilities import *
 
+query_param_name_required = openapi.Parameter(
+    'name',
+    openapi.IN_QUERY,
+    description="Name of the Pokemon",
+    type=openapi.TYPE_STRING,
+    required=True)
 
+
+@swagger_auto_schema(
+    manual_parameters=[query_param_name_required],
+    method='get',
+    operation_summary='Get Pokemon',
+    operation_description="Get Pokemon by name",
+    responses={200: PokemonWithEvolutionsSerializer()})
 @api_view(['GET'])
 def get_pokemon(request):
     if 'name' not in request.query_params:
@@ -54,6 +69,12 @@ def get_pokemon(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(
+    method='post',
+    operation_summary='Create Pokemon Data',
+    operation_description="Creates the pokemon database with the data of all the Pokemon "
+                          "Chains available on pokeapi.co",
+    responses={200: CreatePokeDataResponseSerializer()})
 @api_view(['POST'])
 def create_poke_data(request):
     pokemon_added = Pokemon.objects.count()
@@ -66,4 +87,6 @@ def create_poke_data(request):
         'success': 'Pokemon added: ' + str(pokemon_added)
     }
 
-    return Response(data, status=status.HTTP_200_OK)
+    serializer = CreatePokeDataResponseSerializer(data)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)

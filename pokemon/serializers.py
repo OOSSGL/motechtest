@@ -20,3 +20,8 @@ class PokemonWithEvolutionsSerializer(serializers.Serializer):
         help_text='Data of the related evolutions of this pokemon',
         many=True
     )
+
+
+class CreatePokeDataResponseSerializer(serializers.Serializer):
+    success = serializers.CharField(help_text='Message indicating the succes of the operation, and also '
+                                              'indicating how many Pokemon were added to the database')

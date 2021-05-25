@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'pokemon',
 
     'rest_framework',
+
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
