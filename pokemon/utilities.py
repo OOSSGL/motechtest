@@ -65,7 +65,7 @@ def call_evolutions(chain):
 
         # If it has another evolution we call the method again, until it finds no more evolutions
         if evolution['evolves_to']:
-            print('Entered recursive function for pokemon: ', evolution['species']['name'])
+            print('Entered recursive function for evolution of pokemon: ', evolution['species']['name'])
             call_evolutions(evolution['evolves_to'])
 
     return True
